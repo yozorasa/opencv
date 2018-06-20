@@ -1,8 +1,9 @@
-#include <opencv2/opencv.hpp>
+#include <opencv2/opencv.hpp>  
 using namespace cv;
 #include<iostream>
 using namespace std;
-#include <string>
+#include <stdlib.h>
+#include <string> 
 
 Scalar colorTab[] =     //10個顏色  
 {
@@ -48,6 +49,7 @@ public:
 		clusteredMat.setTo(Scalar::all(0));
 
 		Mat pixels(rows*cols, 1, CV_32FC1); //pixels用於保存所有的灰度像素
+		Mat centers(clusterCounts, 1, pixels.type());
 
 		for (int i = 0; i < rows; ++i)
 		{
@@ -59,7 +61,8 @@ public:
 			}
 		}
 
-		kmeans(pixels, clusterCounts, labels, TermCriteria(TermCriteria::EPS + TermCriteria::MAX_ITER, 10, 0), 5, KMEANS_PP_CENTERS);
+		kmeans(pixels, clusterCounts, labels, TermCriteria(TermCriteria::EPS + TermCriteria::MAX_ITER, 10, 0), 5, KMEANS_PP_CENTERS, centers);
+		cout << "Center of Gray = " << endl << " " << centers << endl << endl;
 
 		for (int i = 0; i < rows; ++i)
 		{
@@ -86,6 +89,7 @@ public:
 
 		Mat pixels(rows*cols, 1, CV_32FC3); //pixels用於保存所有的灰度像素  
 		pixels.setTo(Scalar::all(0));
+		Mat centers(clusterCounts, 1, pixels.type());
 
 		for (int i = 0; i < rows; ++i)
 		{
@@ -98,14 +102,54 @@ public:
 			}
 		}
 
-		kmeans(pixels, clusterCounts, labels, TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 10, 0), 5, KMEANS_PP_CENTERS);
+		kmeans(pixels, clusterCounts, labels, TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 10, 0), 5, KMEANS_PP_CENTERS, centers);
 		//kmeans(pixels, clusterCounts, labels, TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 10, 0), 5, KMEANS_RANDOM_CENTERS);
-
+		cout << "test = " << centers.size() << endl;
+		cout << "Center of Color = " << endl << " " << centers << endl << endl;
+		double bgrAvg[10];
+		int bgrDisFlag[10];
+		int cloudFlag[10];
+		for (int i = 0; i < clusterCounts; i++)
+		{
+			float *clusterCenter = centers.ptr<float>(i);
+			bgrAvg[i] = 0;
+			bgrDisFlag[i] = 0;
+			cloudFlag[i] = 0;
+			for (int j = 0; j < 3; j++)
+			{
+				bgrAvg[i] += clusterCenter[j];
+			}
+			bgrAvg[i] /= 3;
+			for (int j = 0; j < 3; j++)
+			{
+				if (abs(bgrAvg[i] - clusterCenter[j]) > 5)
+				{
+					bgrDisFlag[i] = 1;
+				}
+			}
+			if (bgrDisFlag[i] == 0 && bgrAvg[i] >= 190)
+			{
+				cloudFlag[i] = 1;
+			}
+			cout << "bgrAvg = " << bgrAvg[i] << endl;
+			cout << "bgrDisFlag = " << bgrDisFlag[i] << endl;
+			cout << "cloudFlag = " << cloudFlag[i] << endl;
+		}
+		Scalar paintOn;
 		for (int i = 0; i < rows; ++i)
 		{
 			for (int j = 0; j < cols*channels; j += channels)
 			{
-				circle(clusteredMat, Point(j / channels, i), 1, colorTab[labels.at<int>(i*cols + (j / channels))]);        //標記像素點的類別，顏色區分  
+				//circle(clusteredMat, Point(j / channels, i), 1, colorTab[labels.at<int>(i*cols + (j / channels))]);        //標記像素點的類別，顏色區分  
+				if (cloudFlag[labels.at<int>(i*cols + (j / channels))] == 1)
+				{
+					paintOn = Scalar(255, 255, 255);
+				}
+				else
+				{
+					paintOn = Scalar(0, 0, 0);
+				}
+				circle(clusteredMat, Point(j / channels, i), 1, paintOn);
 			}
 		}
 
@@ -115,7 +159,7 @@ public:
 
 int main()
 {
-	int clusterNumber = 3;
+	int clusterNumber = 2;
 	String clusterNumber_str = to_string(clusterNumber);
 	String loadLocation = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\kmeansResult\\";
 	String loadFileName = "0000c";
