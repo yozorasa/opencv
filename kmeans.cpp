@@ -62,13 +62,36 @@ public:
 		}
 
 		kmeans(pixels, clusterCounts, labels, TermCriteria(TermCriteria::EPS + TermCriteria::MAX_ITER, 10, 0), 5, KMEANS_PP_CENTERS, centers);
-		cout << "Center of Gray = " << endl << " " << centers << endl << endl;
+		cout << "Center of Gray = " << endl;
+		cout << centers.size() << endl;
+		cout << centers << endl << endl << endl;
+		int maxLabel = 0;
+		int cloudFlag[10];
+		for (int i = 0; i < clusterCounts; i++)
+		{
+			cloudFlag[i] = 0;
+			if (centers.at<float>(i) >= 100)
+			{
+				cloudFlag[i] = 1;
+			}
+			cout << "cloudFlag = " << cloudFlag[i] << endl;
+		}
 
+		Scalar paintOn;
 		for (int i = 0; i < rows; ++i)
 		{
 			for (int j = 0; j < cols; ++j)
 			{
-				circle(clusteredMat, Point(j, i), 1, colorTab[labels.at<int>(i*cols + j)]);        //標記像素點的類別，顏色區分  
+				//circle(clusteredMat, Point(j, i), 1, colorTab[labels.at<int>(i*cols + j)]);        //標記像素點的類別，顏色區分
+				if (cloudFlag[labels.at<int>(i*cols + j)] == 1)
+				{
+					paintOn = Scalar(255, 255, 255);
+				}
+				else
+				{
+					paintOn = Scalar(0, 0, 0);
+				}
+				circle(clusteredMat, Point(j, i), 1, paintOn);
 			}
 		}
 
@@ -104,8 +127,9 @@ public:
 
 		kmeans(pixels, clusterCounts, labels, TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 10, 0), 5, KMEANS_PP_CENTERS, centers);
 		//kmeans(pixels, clusterCounts, labels, TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 10, 0), 5, KMEANS_RANDOM_CENTERS);
-		cout << "test = " << centers.size() << endl;
-		cout << "Center of Color = " << endl << " " << centers << endl << endl;
+		cout << "Center of Color = " << endl;
+		cout << centers.size() << endl;
+		cout << centers << endl << endl;
 		double bgrAvg[10];
 		int bgrDisFlag[10];
 		int cloudFlag[10];
@@ -159,20 +183,21 @@ public:
 
 int main()
 {
-	int clusterNumber = 2;
+	int clusterNumber = 3;
 	String clusterNumber_str = to_string(clusterNumber);
 	String loadLocation = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\kmeansResult\\";
 	String loadFileName = "0000c";
 	String loadFileType = ".png";
 	String saveLocation = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\kmeansResult\\";
-	String saveFileNameC = saveLocation + loadFileName + "k"+ clusterNumber +"c" + loadFileType;
-	String saveFileNameG = saveLocation + loadFileName + "k"+ clusterNumber +"g" + loadFileType;
+	String saveFileNameC = saveLocation + loadFileName + "k" + clusterNumber + "c" + loadFileType;
+	String saveFileNameG = saveLocation + loadFileName + "k" + clusterNumber + "g" + loadFileType;
 	Mat testImage = imread(loadLocation + loadFileName + loadFileType);
 	Mat grayImage;
 	cvtColor(testImage, grayImage, COLOR_BGR2GRAY);
 	imwrite(saveLocation + loadFileName + loadFileType, testImage);
 	imwrite(saveLocation + loadFileName + "g" + loadFileType, grayImage);
 	//imshow("gray", grayImage);
+	imshow("origin", testImage);
 	if (testImage.empty())
 	{
 		return -1;
