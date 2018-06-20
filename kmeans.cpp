@@ -65,12 +65,13 @@ public:
 		cout << "Center of Gray = " << endl;
 		cout << centers.size() << endl;
 		cout << centers << endl << endl << endl;
+		cout << "test = " << centers.at<float>(0) << endl;
 		int maxLabel = 0;
 		int cloudFlag[10];
 		for (int i = 0; i < clusterCounts; i++)
 		{
 			cloudFlag[i] = 0;
-			if (centers.at<float>(i) >= 100)
+			if (centers.at<float>(i) >= 170)
 			{
 				cloudFlag[i] = 1;
 			}
@@ -82,7 +83,6 @@ public:
 		{
 			for (int j = 0; j < cols; ++j)
 			{
-				//circle(clusteredMat, Point(j, i), 1, colorTab[labels.at<int>(i*cols + j)]);        //標記像素點的類別，顏色區分
 				if (cloudFlag[labels.at<int>(i*cols + j)] == 1)
 				{
 					paintOn = Scalar(255, 255, 255);
@@ -92,6 +92,7 @@ public:
 					paintOn = Scalar(0, 0, 0);
 				}
 				circle(clusteredMat, Point(j, i), 1, paintOn);
+				//circle(clusteredMat, Point(j, i), 1, colorTab[labels.at<int>(i*cols + j)]);        //標記像素點的類別，顏色區分
 			}
 		}
 
@@ -146,12 +147,13 @@ public:
 			bgrAvg[i] /= 3;
 			for (int j = 0; j < 3; j++)
 			{
-				if (abs(bgrAvg[i] - clusterCenter[j]) > 5)
+				if (abs(bgrAvg[i] - clusterCenter[j]) > 10)
 				{
+					//cout << "Dis = " << abs(bgrAvg[i] - clusterCenter[j]) << endl;
 					bgrDisFlag[i] = 1;
 				}
 			}
-			if (bgrDisFlag[i] == 0 && bgrAvg[i] >= 190)
+			if (bgrDisFlag[i] == 0 && bgrAvg[i] >= 170)
 			{
 				cloudFlag[i] = 1;
 			}
@@ -164,7 +166,6 @@ public:
 		{
 			for (int j = 0; j < cols*channels; j += channels)
 			{
-				//circle(clusteredMat, Point(j / channels, i), 1, colorTab[labels.at<int>(i*cols + (j / channels))]);        //標記像素點的類別，顏色區分  
 				if (cloudFlag[labels.at<int>(i*cols + (j / channels))] == 1)
 				{
 					paintOn = Scalar(255, 255, 255);
@@ -174,6 +175,7 @@ public:
 					paintOn = Scalar(0, 0, 0);
 				}
 				circle(clusteredMat, Point(j / channels, i), 1, paintOn);
+				//circle(clusteredMat, Point(j / channels, i), 1, colorTab[labels.at<int>(i*cols + (j / channels))]);        //標記像素點的類別，顏色區分
 			}
 		}
 
@@ -183,14 +185,14 @@ public:
 
 int main()
 {
-	int clusterNumber = 3;
+	int clusterNumber = 2;
 	String clusterNumber_str = to_string(clusterNumber);
 	String loadLocation = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\kmeansResult\\";
 	String loadFileName = "0000c";
 	String loadFileType = ".png";
 	String saveLocation = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\kmeansResult\\";
-	String saveFileNameC = saveLocation + loadFileName + "k" + clusterNumber + "c" + loadFileType;
-	String saveFileNameG = saveLocation + loadFileName + "k" + clusterNumber + "g" + loadFileType;
+	String saveFileNameC = saveLocation + loadFileName + "k" + clusterNumber_str + "c_bw" + loadFileType;
+	String saveFileNameG = saveLocation + loadFileName + "k" + clusterNumber_str + "g_bw" + loadFileType;
 	Mat testImage = imread(loadLocation + loadFileName + loadFileType);
 	Mat grayImage;
 	cvtColor(testImage, grayImage, COLOR_BGR2GRAY);
