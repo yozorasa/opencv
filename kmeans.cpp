@@ -180,6 +180,8 @@ public:
 			cout << "bgrDisFlag = " << bgrDisFlag[i] << endl;
 			cout << "cloudFlag = " << cloudFlag[i] << endl;
 		}
+
+		clusteredMat = image.clone();
 		Scalar paintOn;
 		for (int i = 0; i < rows; ++i)
 		{
@@ -187,16 +189,18 @@ public:
 			{
 				if (cloudFlag[labels.at<int>(i*cols + (j / channels))] == 1)
 				{
-					paintOn = Scalar(255, 255, 255);
+					//paintOn = Scalar(255, 255, 255);
 				}
 				else
 				{
 					paintOn = Scalar(0, 0, 0);
+					circle(clusteredMat, Point(j / channels, i), 1, paintOn);
 				}
-				circle(clusteredMat, Point(j / channels, i), 1, paintOn);
+				//circle(clusteredMat, Point(j / channels, i), 1, paintOn);
 				//circle(clusteredMat, Point(j / channels, i), 1, colorTab[labels.at<int>(i*cols + (j / channels))]);        //標記像素點的類別，顏色區分
 			}
 		}
+		Mat rectClusteredMat = clusteredMat.clone();
 
 		Mat clusterMatGray;
 		cvtColor(clusteredMat, clusterMatGray, COLOR_BGR2GRAY);
@@ -209,19 +213,43 @@ public:
 		vector<Vec4i> hierarchy;
 		RNG rng(12345);
 		findContours(clusterMatGray, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_NONE);
+		String saveName = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\kmeansResult\\snow";
 		for (int i = 0; i<contours.size(); i++) {
 			Scalar color = Scalar(rng.uniform(0, 255), rng.uniform(0, 255), 255);
 			drawContours(contoursImg, contours, i, color, 2, 8, hierarchy);
 
 			Rect contoursRect = boundingRect(contours[i]);
 			if (contoursRect.width*contoursRect.height>rows*cols / 50)
+			{
+				cv::rectangle(rectClusteredMat, contoursRect, cv::Scalar(0, 0, 255), 2);
 				cv::rectangle(rectImg, contoursRect, cv::Scalar(0, 0, 255), 2);
+				Mat rectROI(contoursRect.size(), CV_8UC3, Scalar(0, 0, 0));
+				for (int y = 0; y < contoursRect.height; ++y)
+				{
+					const uchar *idata = clusteredMat.ptr<uchar>(y + contoursRect.y);
+					uchar *pdata = rectROI.ptr<uchar>(y);
+
+					for (int x = 0; x < contoursRect.width; ++x)
+					{
+						int xx = contoursRect.x;
+						pdata[3 * x] = idata[3 * (x + xx)];
+						pdata[3 * x + 1] = idata[3 * (x + xx) + 1];
+						pdata[3 * x + 2] = idata[3 * (x + xx) + 2];
+					}
+				}
+				//namedWindow("RectImage" + i);
+				String imName = "RectImg" + to_string(i);
+				imshow(imName, rectROI);
+				imwrite(saveName + imName + ".png", rectROI);
+			}
 
 		}
 		imshow("contoursImgColor", contoursImg);
 		imshow("rectImgColor", rectImg);
+		imwrite(saveName + "Contours" + ".png", contoursImg);
+		imwrite(saveName + "Rect" + ".png", rectImg);
 
-		return clusteredMat;
+		return rectClusteredMat;
 	}
 };
 
@@ -230,7 +258,7 @@ int main()
 	int clusterNumber = 4;
 	String clusterNumber_str = to_string(clusterNumber);
 	String loadLocation = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\kmeansResult\\";
-	String loadFileName = "0000c";
+	String loadFileName = "snow";
 	String loadFileType = ".png";
 	String saveLocation = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\kmeansResult\\";
 	String saveFileNameC = saveLocation + loadFileName + "k" + clusterNumber_str + "c_bw" + loadFileType;
