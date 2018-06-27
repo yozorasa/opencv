@@ -24,7 +24,9 @@ class ClusterPixels
 private:
 	Mat image;          //待聚類圖象  
 	Mat labels;         //聚類後的標籤  
-	int clusterCounts;  //分類數,不得大於10，只是顏色定義只有10類，並不是算法限制  
+	int clusterCounts;  //分類數,不得大於10，只是顏色定義只有10類，並不是算法限制
+	Mat edgeColor;
+	Mat edgeGray;
 
 public:
 	ClusterPixels() :clusterCounts(0) {}
@@ -37,6 +39,7 @@ public:
 
 	Mat clusterGrayImageByKmeans()
 	{
+		Mat originImage = image.clone();
 		//轉換成灰度圖  
 		if (image.channels() != 1)
 			cvtColor(image, image, COLOR_BGR2GRAY);
@@ -95,6 +98,21 @@ public:
 				//circle(clusteredMat, Point(j, i), 1, colorTab[labels.at<int>(i*cols + j)]);        //標記像素點的類別，顏色區分
 			}
 		}
+
+		cvtColor(clusteredMat, edgeGray, COLOR_BGR2GRAY);
+		//GaussianBlur(clusteredMat, edgeGray, Size(3, 3), 0);
+		//Canny(clusteredMat, edgeGray, 50, 150, 3);
+		//imshow("CannyGray", edgeGray);
+		Mat contoursImg = originImage.clone();
+		vector<vector<Point>> contours;
+		vector<Vec4i> hierarchy;
+		RNG rng(12345);
+		findContours(edgeGray, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_NONE);
+		for (int i = 0; i<contours.size(); i++) {
+			Scalar color = Scalar(rng.uniform(0, 255), rng.uniform(0, 255), 255);
+			drawContours(contoursImg, contours, i, color, 2, 8, hierarchy);
+		}
+		imshow("contoursImgGray", contoursImg);
 
 		return clusteredMat;
 	}
@@ -179,13 +197,35 @@ public:
 			}
 		}
 
+		cvtColor(clusteredMat, edgeColor, COLOR_BGR2GRAY);
+		//GaussianBlur(clusteredMat, edgeColor, Size(3, 3), 0);
+		//Canny(clusteredMat, edgeColor, 50, 150, 3);
+		//imshow("CannyColor", edgeColor);
+		Mat contoursImg = image.clone();
+		Mat rectImg = image.clone();
+		vector<vector<Point>> contours;
+		vector<Vec4i> hierarchy;
+		RNG rng(12345);
+		findContours(edgeColor, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_NONE);
+		for (int i = 0; i<contours.size(); i++) {
+			Scalar color = Scalar(rng.uniform(0, 255), rng.uniform(0, 255), 255);
+			drawContours(contoursImg, contours, i, color, 2, 8, hierarchy);
+
+			Rect contoursRect = boundingRect(contours[i]);
+			if (contoursRect.width*contoursRect.height>rows*cols / 50)
+				cv::rectangle(rectImg, contoursRect, cv::Scalar(0, 0, 255), 2);
+
+		}
+		imshow("contoursImgColor", contoursImg);
+		imshow("rectImgColor", rectImg);
+
 		return clusteredMat;
 	}
 };
 
 int main()
 {
-	int clusterNumber = 2;
+	int clusterNumber = 4;
 	String clusterNumber_str = to_string(clusterNumber);
 	String loadLocation = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\kmeansResult\\";
 	String loadFileName = "0000c";
@@ -207,7 +247,7 @@ int main()
 	ClusterPixels clusterPix(testImage, clusterNumber);
 
 	Mat colorResults = clusterPix.clusterColorImageByKmeans();
-	Mat grayResult = clusterPix.clusterGrayImageByKmeans();
+	Mat grayResult;// = clusterPix.clusterGrayImageByKmeans();
 
 	if (!colorResults.empty())
 	{
