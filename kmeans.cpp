@@ -99,7 +99,8 @@ public:
 			}
 		}
 
-		cvtColor(clusteredMat, edgeGray, COLOR_BGR2GRAY);
+		Mat clusterMatGray;
+		cvtColor(clusteredMat, clusterMatGray, COLOR_BGR2GRAY);
 		//GaussianBlur(clusteredMat, edgeGray, Size(3, 3), 0);
 		//Canny(clusteredMat, edgeGray, 50, 150, 3);
 		//imshow("CannyGray", edgeGray);
@@ -107,7 +108,7 @@ public:
 		vector<vector<Point>> contours;
 		vector<Vec4i> hierarchy;
 		RNG rng(12345);
-		findContours(edgeGray, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_NONE);
+		findContours(clusterMatGray, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_NONE);
 		for (int i = 0; i<contours.size(); i++) {
 			Scalar color = Scalar(rng.uniform(0, 255), rng.uniform(0, 255), 255);
 			drawContours(contoursImg, contours, i, color, 2, 8, hierarchy);
@@ -197,7 +198,8 @@ public:
 			}
 		}
 
-		cvtColor(clusteredMat, edgeColor, COLOR_BGR2GRAY);
+		Mat clusterMatGray;
+		cvtColor(clusteredMat, clusterMatGray, COLOR_BGR2GRAY);
 		//GaussianBlur(clusteredMat, edgeColor, Size(3, 3), 0);
 		//Canny(clusteredMat, edgeColor, 50, 150, 3);
 		//imshow("CannyColor", edgeColor);
@@ -206,7 +208,7 @@ public:
 		vector<vector<Point>> contours;
 		vector<Vec4i> hierarchy;
 		RNG rng(12345);
-		findContours(edgeColor, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_NONE);
+		findContours(clusterMatGray, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_NONE);
 		for (int i = 0; i<contours.size(); i++) {
 			Scalar color = Scalar(rng.uniform(0, 255), rng.uniform(0, 255), 255);
 			drawContours(contoursImg, contours, i, color, 2, 8, hierarchy);
