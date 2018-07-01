@@ -27,13 +27,15 @@ private:
 	int clusterCounts;  //分類數,不得大於10，只是顏色定義只有10類，並不是算法限制
 	Mat edgeColor;
 	Mat edgeGray;
+	String fileName;
 
 public:
 	ClusterPixels() :clusterCounts(0) {}
-	ClusterPixels(const Mat& src, int clusters = 5) :clusterCounts(clusters) { image = src.clone(); }
+	ClusterPixels(const Mat& src, String srcName, int clusters = 5) :clusterCounts(clusters),fileName(srcName) { image = src.clone(); }
 
 	void setImage(const Mat& src) { image = src.clone(); };
 	void setClusters(int clusters) { clusterCounts = clusters; }
+	void setSrcName(String srcName) { fileName = srcName; };
 
 	Mat getLabels() { return labels; };      //返回聚類後的標籤  
 
@@ -103,7 +105,7 @@ public:
 		cvtColor(clusteredMat, clusterMatGray, COLOR_BGR2GRAY);
 		//GaussianBlur(clusteredMat, edgeGray, Size(3, 3), 0);
 		//Canny(clusteredMat, edgeGray, 50, 150, 3);
-		//imshow("CannyGray", edgeGray);
+		////imshow("CannyGray", edgeGray);
 		Mat contoursImg = originImage.clone();
 		vector<vector<Point>> contours;
 		vector<Vec4i> hierarchy;
@@ -113,7 +115,7 @@ public:
 			Scalar color = Scalar(rng.uniform(0, 255), rng.uniform(0, 255), 255);
 			drawContours(contoursImg, contours, i, color, 2, 8, hierarchy);
 		}
-		imshow("contoursImgGray", contoursImg);
+		//imshow("contoursImgGray", contoursImg);
 
 		return clusteredMat;
 	}
@@ -206,20 +208,20 @@ public:
 		cvtColor(clusteredMat, clusterMatGray, COLOR_BGR2GRAY);
 		//GaussianBlur(clusteredMat, edgeColor, Size(3, 3), 0);
 		//Canny(clusteredMat, edgeColor, 50, 150, 3);
-		//imshow("CannyColor", edgeColor);
+		////imshow("CannyColor", edgeColor);
 		Mat contoursImg = image.clone();
 		Mat rectImg = image.clone();
 		vector<vector<Point>> contours;
 		vector<Vec4i> hierarchy;
 		RNG rng(12345);
 		findContours(clusterMatGray, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_NONE);
-		String saveName = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\kmeansResult\\snow";
+		String saveName = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\test\\";
 		for (int i = 0; i<contours.size(); i++) {
 			Scalar color = Scalar(rng.uniform(0, 255), rng.uniform(0, 255), 255);
 			drawContours(contoursImg, contours, i, color, 2, 8, hierarchy);
 
 			Rect contoursRect = boundingRect(contours[i]);
-			if (contoursRect.width*contoursRect.height>rows*cols / 50)
+			if (contoursRect.width*contoursRect.height>rows*cols / 500)
 			{
 				cv::rectangle(rectClusteredMat, contoursRect, cv::Scalar(0, 0, 255), 2);
 				cv::rectangle(rectImg, contoursRect, cv::Scalar(0, 0, 255), 2);
@@ -238,16 +240,16 @@ public:
 					}
 				}
 				//namedWindow("RectImage" + i);
-				String imName = "RectImg" + to_string(i);
-				imshow(imName, rectROI);
-				imwrite(saveName + imName + ".png", rectROI);
+				String imName = "cs" + to_string(i);
+				//imshow(imName, rectROI);
+				imwrite(saveName + "cut\\" + fileName + imName + ".jpg", rectROI);
 			}
 
 		}
-		imshow("contoursImgColor", contoursImg);
-		imshow("rectImgColor", rectImg);
-		imwrite(saveName + "Contours" + ".png", contoursImg);
-		imwrite(saveName + "Rect" + ".png", rectImg);
+		//imshow("contoursImgColor", contoursImg);
+		//imshow("rectImgColor", rectImg);
+		imwrite(saveName + fileName + "Contours" + ".jpg", contoursImg);
+		//imwrite(saveName + fileName + "Rect" + ".jpg", rectImg);
 
 		return rectClusteredMat;
 	}
@@ -255,44 +257,47 @@ public:
 
 int main()
 {
-	int clusterNumber = 4;
-	String clusterNumber_str = to_string(clusterNumber);
-	String loadLocation = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\kmeansResult\\";
-	String loadFileName = "snow";
-	String loadFileType = ".png";
-	String saveLocation = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\kmeansResult\\";
-	String saveFileNameC = saveLocation + loadFileName + "k" + clusterNumber_str + "c_bw" + loadFileType;
-	String saveFileNameG = saveLocation + loadFileName + "k" + clusterNumber_str + "g_bw" + loadFileType;
-	Mat testImage = imread(loadLocation + loadFileName + loadFileType);
-	Mat grayImage;
-	cvtColor(testImage, grayImage, COLOR_BGR2GRAY);
-	imwrite(saveLocation + loadFileName + loadFileType, testImage);
-	imwrite(saveLocation + loadFileName + "g" + loadFileType, grayImage);
-	//imshow("gray", grayImage);
-	imshow("origin", testImage);
-	if (testImage.empty())
-	{
-		return -1;
+	for (int i = 1; i <= 452; i++) {
+		int clusterNumber = 4;
+		String clusterNumber_str = to_string(clusterNumber);
+		String loadLocation = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\cloud\\img 1-452 (taiwan)\\";
+		String loadFileName = to_string(i);
+		String loadFileType = ".jpg";
+		String saveLocation = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\test\\";
+		//String saveFileNameC = saveLocation + loadFileName + "k" + clusterNumber_str + "c_bw" + loadFileType;
+		String saveFileNameC = saveLocation + loadFileName + "Rect" + loadFileType;
+		String saveFileNameG = saveLocation + loadFileName + "k" + clusterNumber_str + "g_bw" + loadFileType;
+		Mat testImage = imread(loadLocation + loadFileName + loadFileType);
+		Mat grayImage;
+		//cvtColor(testImage, grayImage, COLOR_BGR2GRAY);
+		imwrite(saveLocation + loadFileName + loadFileType, testImage);
+		//imwrite(saveLocation + loadFileName + "g" + loadFileType, grayImage);
+		////imshow("gray", grayImage);
+		//imshow("origin", testImage);
+		if (testImage.empty())
+		{
+			return -1;
+		}
+		ClusterPixels clusterPix(testImage, loadFileName, clusterNumber);
+
+		Mat colorResults = clusterPix.clusterColorImageByKmeans();
+		Mat grayResult;// = clusterPix.clusterGrayImageByKmeans();
+
+		if (!colorResults.empty())
+		{
+			//hconcat(testImage, colorResults, colorResults);
+			//imshow("clusterImage", colorResults);
+			imwrite(saveFileNameC, colorResults);
+		}
+
+		if (!grayResult.empty())
+		{
+			//hconcat(testImage, grayResult, grayResult);
+			imshow("grayCluster", grayResult);
+			imwrite(saveFileNameG, grayResult);
+		}
+
+		if (waitKey() == 27)
+			return 0;
 	}
-	ClusterPixels clusterPix(testImage, clusterNumber);
-
-	Mat colorResults = clusterPix.clusterColorImageByKmeans();
-	Mat grayResult;// = clusterPix.clusterGrayImageByKmeans();
-
-	if (!colorResults.empty())
-	{
-		//hconcat(testImage, colorResults, colorResults);
-		imshow("clusterImage", colorResults);
-		imwrite(saveFileNameC, colorResults);
-	}
-
-	if (!grayResult.empty())
-	{
-		//hconcat(testImage, grayResult, grayResult);
-		imshow("grayCluster", grayResult);
-		imwrite(saveFileNameG, grayResult);
-	}
-
-	if (waitKey() == 27)
-		return 0;
 }
