@@ -3,7 +3,18 @@ using namespace cv;
 #include<iostream>
 using namespace std;
 #include <stdlib.h>
-#include <string> 
+#include <string>
+
+int imageStart = 1;
+int imageFinish = 452;
+int clusterNumber = 4;
+String loadLocation = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\cloud\\img 1-452 (taiwan)\\";
+String loadFileType = ".jpg";
+String saveLocation = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\test2\\";
+
+int bgrAbsThreshold = 20;
+int bgrAvgThreshold = 140;
+int rectSizeThreshold = 5000;
 
 Scalar colorTab[] =     //10個顏色  
 {
@@ -168,13 +179,13 @@ public:
 			bgrAvg[i] /= 3;
 			for (int j = 0; j < 3; j++)
 			{
-				if (abs(bgrAvg[i] - clusterCenter[j]) > 10)
+				if (abs(bgrAvg[i] - clusterCenter[j]) > bgrAbsThreshold)
 				{
 					//cout << "Dis = " << abs(bgrAvg[i] - clusterCenter[j]) << endl;
 					bgrDisFlag[i] = 1;
 				}
 			}
-			if (bgrDisFlag[i] == 0 && bgrAvg[i] >= 170)
+			if (bgrDisFlag[i] == 0 && bgrAvg[i] >= bgrAvgThreshold)
 			{
 				cloudFlag[i] = 1;
 			}
@@ -215,13 +226,13 @@ public:
 		vector<Vec4i> hierarchy;
 		RNG rng(12345);
 		findContours(clusterMatGray, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_NONE);
-		String saveName = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\test\\";
+		String saveName = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\test2\\";
 		for (int i = 0; i<contours.size(); i++) {
 			Scalar color = Scalar(rng.uniform(0, 255), rng.uniform(0, 255), 255);
 			drawContours(contoursImg, contours, i, color, 2, 8, hierarchy);
 
 			Rect contoursRect = boundingRect(contours[i]);
-			if (contoursRect.width*contoursRect.height>rows*cols / 500)
+			if (contoursRect.width*contoursRect.height > rectSizeThreshold)
 			{
 				cv::rectangle(rectClusteredMat, contoursRect, cv::Scalar(0, 0, 255), 2);
 				cv::rectangle(rectImg, contoursRect, cv::Scalar(0, 0, 255), 2);
@@ -257,13 +268,13 @@ public:
 
 int main()
 {
-	for (int i = 1; i <= 452; i++) {
-		int clusterNumber = 4;
+	for (int i = imageStart; i <= imageFinish; i++) {
+		//int clusterNumber = 4;
 		String clusterNumber_str = to_string(clusterNumber);
-		String loadLocation = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\cloud\\img 1-452 (taiwan)\\";
+		//String loadLocation = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\cloud\\img 1-452 (taiwan)\\";
 		String loadFileName = to_string(i);
-		String loadFileType = ".jpg";
-		String saveLocation = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\test\\";
+		//String loadFileType = ".jpg";
+		//String saveLocation = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\test2\\";*/
 		//String saveFileNameC = saveLocation + loadFileName + "k" + clusterNumber_str + "c_bw" + loadFileType;
 		String saveFileNameC = saveLocation + loadFileName + "Rect" + loadFileType;
 		String saveFileNameG = saveLocation + loadFileName + "k" + clusterNumber_str + "g_bw" + loadFileType;
