@@ -6,7 +6,7 @@ using namespace std;
 #include <string>
 
 int imageStart = 1;
-int imageFinish = 452;
+int imageFinish = 1;
 int clusterNumber = 4;
 String loadLocation = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\cloud\\img 1-452 (taiwan)\\";
 String loadFileType = ".jpg";
@@ -166,12 +166,14 @@ public:
 		double bgrAvg[10];
 		int bgrDisFlag[10];
 		int cloudFlag[10];
+		Scalar clusterColor[5];
 		for (int i = 0; i < clusterCounts; i++)
 		{
 			float *clusterCenter = centers.ptr<float>(i);
 			bgrAvg[i] = 0;
 			bgrDisFlag[i] = 0;
 			cloudFlag[i] = 0;
+			clusterColor[i] = Scalar(clusterCenter[0], clusterCenter[1], clusterCenter[2]);
 			for (int j = 0; j < 3; j++)
 			{
 				bgrAvg[i] += clusterCenter[j];
@@ -210,11 +212,11 @@ public:
 					circle(clusteredMat, Point(j / channels, i), 1, paintOn);
 				}
 				//circle(clusteredMat, Point(j / channels, i), 1, paintOn);
-				//circle(clusteredMat, Point(j / channels, i), 1, colorTab[labels.at<int>(i*cols + (j / channels))]);        //標記像素點的類別，顏色區分
+				//circle(clusteredMat, Point(j / channels, i), 1, clusterColor[labels.at<int>(i*cols + (j / channels))]);        //標記像素點的類別，顏色區分
 			}
 		}
 		Mat rectClusteredMat = clusteredMat.clone();
-
+		//imwrite(saveLocation + fileName +"kms" + loadFileType, clusteredMat);
 		Mat clusterMatGray;
 		cvtColor(clusteredMat, clusterMatGray, COLOR_BGR2GRAY);
 		//GaussianBlur(clusteredMat, edgeColor, Size(3, 3), 0);
@@ -226,7 +228,6 @@ public:
 		vector<Vec4i> hierarchy;
 		RNG rng(12345);
 		findContours(clusterMatGray, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_NONE);
-		String saveName = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\test2\\";
 		for (int i = 0; i<contours.size(); i++) {
 			Scalar color = Scalar(rng.uniform(0, 255), rng.uniform(0, 255), 255);
 			drawContours(contoursImg, contours, i, color, 2, 8, hierarchy);
@@ -253,14 +254,14 @@ public:
 				//namedWindow("RectImage" + i);
 				String imName = "cs" + to_string(i);
 				//imshow(imName, rectROI);
-				imwrite(saveName + "cut\\" + fileName + imName + ".jpg", rectROI);
+				imwrite(saveLocation + "cut\\" + fileName + imName + ".jpg", rectROI);
 			}
 
 		}
 		//imshow("contoursImgColor", contoursImg);
 		//imshow("rectImgColor", rectImg);
-		imwrite(saveName + fileName + "Contours" + ".jpg", contoursImg);
-		//imwrite(saveName + fileName + "Rect" + ".jpg", rectImg);
+		imwrite(saveLocation + fileName + "Contours" + ".jpg", contoursImg);
+		//imwrite(saveLocation + fileName + "Rect" + ".jpg", rectImg);
 
 		return rectClusteredMat;
 	}
