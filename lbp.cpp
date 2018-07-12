@@ -10,10 +10,10 @@ String nameBeforeNumber = "cut";
 int startNum = 1;
 int finishNum = 2983;
 
-Mat LBP(fileName)
+Mat LBP(String fileName)
 {
 	Mat src_image;
-	src_image = imread(loadLocation+fileName+loadFileType);
+	src_image = imread(loadLocation + fileName + loadFileType);
 	bool affiche = true;
 	cv::Mat Image(src_image.rows, src_image.cols, CV_8UC1);  //建立一個與src_image等高等寬的單通道圖像Image
 	cv::Mat lbp(src_image.rows, src_image.cols, CV_8UC1);    //建立一個與src_image等高等寬的單通道圖像lbp
@@ -60,7 +60,7 @@ Mat LBP(fileName)
 	if (affiche == true)
 	{
 		//cv::imshow("image LBP", lbp);
-		imwrite(saveLocation+fileName+"lbp"+loadFileType, lbp);
+		imwrite(saveLocation + fileName + "lbp" + loadFileType, lbp);
 		//waitKey(10);
 		//cv::imshow("grayscale", Image);
 		//waitKey(10);
@@ -68,18 +68,19 @@ Mat LBP(fileName)
 
 	/*else
 	{
-		cv::destroyWindow("image LBP");
-		cv::destroyWindow("grayscale");
+	cv::destroyWindow("image LBP");
+	cv::destroyWindow("grayscale");
 	}*/
 
 	return lbp;
 }
 int main()
 {
-	String fileName = nameBeforeNumber+"0";
-	for(int i=startNum;i++;i<=finishNum)
+	String fileName = nameBeforeNumber + "0";
+	for (int i = startNum; i <= finishNum; i++)
 	{
-		fileName = nameBeforeNumber+to_string(i);
+		cout << "start " << i << endl;
+		fileName = nameBeforeNumber + to_string(i);
 		LBP(fileName);
 	}
 	//cvWaitKey(0);
