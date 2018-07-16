@@ -84,6 +84,5 @@ int main()
 		LBP(fileName);
 		cout << " OK!" << endl;
 	}
-	//cvWaitKey(0);
 	return 0;
 }
