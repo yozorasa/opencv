@@ -76,12 +76,13 @@ Mat LBP(String fileName)
 }
 int main()
 {
-	String fileName = nameBeforeNumber + "0";
+	String fileName = nameBeforeNumber + to_string(0);
 	for (int i = startNum; i <= finishNum; i++)
 	{
-		cout << "start " << i << endl;
+		cout << i;
 		fileName = nameBeforeNumber + to_string(i);
 		LBP(fileName);
+		cout << " OK!" << endl;
 	}
 	//cvWaitKey(0);
 	return 0;

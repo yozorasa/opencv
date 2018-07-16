@@ -6,15 +6,15 @@ using namespace std;
 #include <string>
 
 int imageStart = 1;
-int imageFinish = 1;
+int imageFinish = 452;
 int clusterNumber = 4;
 String loadLocation = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\cloud\\img 1-452 (taiwan)\\";
 String loadFileType = ".jpg";
-String saveLocation = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\test2\\";
+String saveLocation = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\cloud\\img 1-452 (taiwan)\\kmeansBinary\\";
 
-int bgrAbsThreshold = 20;
-int bgrAvgThreshold = 140;
-int rectSizeThreshold = 5000;
+int bgrAbsThreshold = 15;
+int bgrAvgThreshold = 160;
+int rectSizeThreshold = 8000;
 
 Scalar colorTab[] =     //10個顏色  
 {
@@ -42,7 +42,7 @@ private:
 
 public:
 	ClusterPixels() :clusterCounts(0) {}
-	ClusterPixels(const Mat& src, String srcName, int clusters = 5) :clusterCounts(clusters),fileName(srcName) { image = src.clone(); }
+	ClusterPixels(const Mat& src, String srcName, int clusters = 5) :clusterCounts(clusters), fileName(srcName) { image = src.clone(); }
 
 	void setImage(const Mat& src) { image = src.clone(); };
 	void setClusters(int clusters) { clusterCounts = clusters; }
@@ -215,6 +215,8 @@ public:
 				//circle(clusteredMat, Point(j / channels, i), 1, clusterColor[labels.at<int>(i*cols + (j / channels))]);        //標記像素點的類別，顏色區分
 			}
 		}
+		//imwrite(saveLocation + fileName +"kmsB" + loadFileType, clusteredMat);
+
 		Mat rectClusteredMat = clusteredMat.clone();
 		//imwrite(saveLocation + fileName +"kms" + loadFileType, clusteredMat);
 		Mat clusterMatGray;
@@ -228,41 +230,50 @@ public:
 		vector<Vec4i> hierarchy;
 		RNG rng(12345);
 		findContours(clusterMatGray, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_NONE);
+
+		Mat judgeBinary(image.size(), CV_8UC3, Scalar(0, 0, 0));
+
 		for (int i = 0; i<contours.size(); i++) {
 			Scalar color = Scalar(rng.uniform(0, 255), rng.uniform(0, 255), 255);
 			drawContours(contoursImg, contours, i, color, 2, 8, hierarchy);
-
 			Rect contoursRect = boundingRect(contours[i]);
 			if (contoursRect.width*contoursRect.height > rectSizeThreshold)
 			{
-				cv::rectangle(rectClusteredMat, contoursRect, cv::Scalar(0, 0, 255), 2);
+				drawContours(judgeBinary, contours, i, Scalar(255, 255, 255), CV_FILLED, 8, hierarchy);
+				/*cv::rectangle(rectClusteredMat, contoursRect, cv::Scalar(0, 0, 255), 2);
 				cv::rectangle(rectImg, contoursRect, cv::Scalar(0, 0, 255), 2);
 				Mat rectROI(contoursRect.size(), CV_8UC3, Scalar(0, 0, 0));
 				for (int y = 0; y < contoursRect.height; ++y)
 				{
 					const uchar *idata = clusteredMat.ptr<uchar>(y + contoursRect.y);
 					uchar *pdata = rectROI.ptr<uchar>(y);
-
+					uchar *qdata = judgeBinary.ptr<uchar>(y + contoursRect.y);
 					for (int x = 0; x < contoursRect.width; ++x)
 					{
 						int xx = contoursRect.x;
 						pdata[3 * x] = idata[3 * (x + xx)];
 						pdata[3 * x + 1] = idata[3 * (x + xx) + 1];
 						pdata[3 * x + 2] = idata[3 * (x + xx) + 2];
+
+						qdata[3 * (x + xx)] = idata[3 * (x + xx)];
+						qdata[3 * (x + xx) + 1] = idata[3 * (x + xx) + 1];
+						qdata[3 * (x + xx) + 2] = idata[3 * (x + xx) + 2];
 					}
 				}
 				//namedWindow("RectImage" + i);
 				String imName = "cs" + to_string(i);
 				//imshow(imName, rectROI);
-				imwrite(saveLocation + "cut\\" + fileName + imName + ".jpg", rectROI);
+				//imwrite(saveLocation + "cut\\" + fileName + imName + ".jpg", rectROI);
+				//imwrite(saveLocation + fileName + imName + ".jpg", rectROI);
+				//imwrite(saveLocation + fileName + "jBin" + imName  + ".jpg", judgeBinary);*/
 			}
 
 		}
 		//imshow("contoursImgColor", contoursImg);
 		//imshow("rectImgColor", rectImg);
-		imwrite(saveLocation + fileName + "Contours" + ".jpg", contoursImg);
+		//imwrite(saveLocation + fileName + "Contours" + ".jpg", contoursImg);
 		//imwrite(saveLocation + fileName + "Rect" + ".jpg", rectImg);
-
+		imwrite(saveLocation + fileName + "jB" + ".jpg", judgeBinary);
 		return rectClusteredMat;
 	}
 };
@@ -282,7 +293,7 @@ int main()
 		Mat testImage = imread(loadLocation + loadFileName + loadFileType);
 		Mat grayImage;
 		//cvtColor(testImage, grayImage, COLOR_BGR2GRAY);
-		imwrite(saveLocation + loadFileName + loadFileType, testImage);
+		//imwrite(saveLocation + loadFileName + loadFileType, testImage);
 		//imwrite(saveLocation + loadFileName + "g" + loadFileType, grayImage);
 		////imshow("gray", grayImage);
 		//imshow("origin", testImage);
@@ -299,7 +310,7 @@ int main()
 		{
 			//hconcat(testImage, colorResults, colorResults);
 			//imshow("clusterImage", colorResults);
-			imwrite(saveFileNameC, colorResults);
+			//imwrite(saveFileNameC, colorResults);
 		}
 
 		if (!grayResult.empty())
