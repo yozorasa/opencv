@@ -2,11 +2,10 @@
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string>
- 
+#include <string> 
 using namespace cv;
 using namespace std;
- 
+
 int imageStart = 1;
 int imageFinish = 452;
 String loadLocation = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\cloud\\img 1-452 (taiwan)\\kmeansBinary\\";
