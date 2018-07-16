@@ -1,7 +1,6 @@
 #include "opencv2/opencv.hpp"
 #include <string>
 #include <iostream>
-
 using namespace cv;
 using namespace std;
 
@@ -18,7 +17,7 @@ int main()
 {
 	Mat img, subImg;
 	int x, y, col, row, key;
-	
+
 	for(int z=imageStart;z<=imageFinish;z++)
 	{
 		cout << z;
