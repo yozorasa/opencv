@@ -14,8 +14,8 @@ using namespace cv;
 using namespace std;
 
 String record = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\lbp\\";
-String loadLocation = record+"lbp\\";
-String loadLocation2 = record+"lbp_notCloud\\";
+String loadLocation = record + "lbp\\";
+String loadLocation2 = record + "lbp_notCloud\\";
 
 fstream file;
 
@@ -1533,8 +1533,9 @@ int main()
 		exit(1);     //在不正常情形下，中斷程式的執行
 	}
 	Mat lbp, roi;
+	int hcount[256] = { 0 };
 	for (int i = 0; i<cloudAmount * 2; i += 2) {
-		file << cloudFileName[i] << "\n";
+		//file << cloudFileName[i] << "\n";
 		cout << cloudFileName[i] << endl;
 		lbp = imread(loadLocation + cloudFileName[i], 0);
 		roi = imread(loadLocation + cloudFileName[i + 1]);
@@ -1543,13 +1544,15 @@ int main()
 		int rows = lbp.rows;
 		int cols = lbp.cols;
 		int pixelCount = 0;
+		for (int g = 0; g < 256; g++)
+			hcount[g] = 0;
 		for (int r = 0; r < rows; ++r) {
 			const uchar *lbpdata = lbp.ptr<uchar>(r);
 			const uchar *roidata = roi.ptr<uchar>(r);
 			for (int c = 0; c < cols; ++c)
 			{
 				if (!(roidata[3 * c] == 255 && roidata[3 * c + 1] == 0 && roidata[3 * c + 2] == 255)) {
-					histogram[i][lbpdata[c]]++;
+					hcount[lbpdata[c]]++;
 					pixelCount++;
 				}
 				else {
@@ -1557,16 +1560,18 @@ int main()
 				}
 			}
 		}
-		for (int z = 0; z<256; z++) {
-			cout << histogram[i][z] << ",\n";
-			histogram[i][z] /= pixelCount;
-			file << histogram[i][z] << ",\n";
+		for (int z = 0; z<256 && pixelCount!=0; z++) {
+			cout << "z = " << z << " hcount = ";
+			cout << hcount[z];
+			histogram[i][z] = (float)hcount[z] / pixelCount;
+			//file << histogram[i][z] << ",\n";
+			cout << " hist = " << histogram[i][z] << " pixel = " << pixelCount << endl;
 		}
-		file << "\n";
+		//file << "\n";
 		cout << "Have " << pixelCount << "pixels." << endl;
 	}
 	for (int i = 0; i<otherAmount * 2; i += 2) {
-		file << otherFileName[i] << "\n";
+		//file << otherFileName[i] << "\n";
 		cout << otherFileName[i] << endl;
 		lbp = imread(loadLocation2 + otherFileName[i], 0);
 		roi = imread(loadLocation2 + otherFileName[i + 1]);
@@ -1575,13 +1580,15 @@ int main()
 		int rows = lbp.rows;
 		int cols = lbp.cols;
 		int pixelCount = 0;
+		for (int g = 0; g < 256; g++)
+			hcount[g] = 0;
 		for (int r = 0; r < rows; ++r) {
 			const uchar *lbpdata = lbp.ptr<uchar>(r);
 			const uchar *roidata = roi.ptr<uchar>(r);
 			for (int c = 0; c < cols; ++c)
 			{
 				if (!(roidata[3 * c] == 255 && roidata[3 * c + 1] == 0 && roidata[3 * c + 2] == 255)) {
-					histogram[i + 498][lbpdata[c]]++;
+					hcount[lbpdata[c]]++;
 					pixelCount++;
 				}
 				else {
@@ -1589,12 +1596,12 @@ int main()
 				}
 			}
 		}
-		for (int z = 0; z<256; z++) {
-			cout << histogram[i + 498][z] << ",\n";
-			histogram[i + 498][z] /= pixelCount;
-			file << histogram[i + 498][z] << ",\n";
+		for (int z = 0; z<256 && pixelCount != 0; z++) {
+			cout << hcount[z] << ",\n";
+			histogram[i + 498][z] = (float)hcount[z] / pixelCount;
+			//file << histogram[i + 498][z] << ",\n";
 		}
-		file << "\n";
+		//file << "\n";
 		cout << "Have " << pixelCount << "pixels." << endl;
 	}
 
@@ -1611,7 +1618,7 @@ int main()
 	Mat trainingDataMat(num_data, num_column, CV_32FC1, histogram);
 	Mat labelsMat(num_data, 1, CV_32SC1, tag);
 
-	// Set up SVM's parameters
+	/* Set up SVM's parameters
 	SVM::Params params;
 	params.svmType = SVM::C_SVC;
 	params.kernelType = SVM::LINEAR;
@@ -1620,7 +1627,7 @@ int main()
 	// Train the SVM
 	Ptr<SVM> svm = StatModel::train<SVM>(trainingDataMat, ROW_SAMPLE, labelsMat, params);
 	svm->save(record + "SVMresult.xml");
-	
+
 	//opencv2版本
 	/*CvSVMParams params; //設定 SVM 參數用的物件
 	//以下設定 SVM 參數
