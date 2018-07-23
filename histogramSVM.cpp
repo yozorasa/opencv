@@ -19,11 +19,11 @@ String loadLocation2 = record + "lbp_notCloud\\";
 
 fstream file;
 
-int cloudAmount = 498;
+int cloudAmount = 497;
 int otherAmount = 251;
-float histogram[749][256] = { 0 };
-int tag[749] = { 0 };
-String cloudFileName[996] = {
+float histogram[748][256] = { 0 };
+int tag[748] = { 0 };
+String cloudFileName[994] = {
 	"1_106_lbp.jpg",
 	"1_106_roi.jpg",
 	"1_116_lbp.jpg",
@@ -796,8 +796,8 @@ String cloudFileName[996] = {
 	"628_397_roi.jpg",
 	"628_426_lbp.jpg",
 	"628_426_roi.jpg",
-	"628_443_lbp.jpg",
-	"628_443_roi.jpg",
+	//"628_443_lbp.jpg",
+	//"628_443_roi.jpg",
 	"628_455_lbp.jpg",
 	"628_455_roi.jpg",
 	"628_466_lbp.jpg",
@@ -1560,7 +1560,9 @@ int main()
 				}
 			}
 		}
-		for (int z = 0; z<256 && pixelCount!=0; z++) {
+		lbp.release();
+		roi.release();
+		for (int z = 0; z<256 && pixelCount != 0; z++) {
 			cout << "z = " << z << " hcount = ";
 			cout << hcount[z];
 			histogram[i][z] = (float)hcount[z] / pixelCount;
@@ -1596,17 +1598,19 @@ int main()
 				}
 			}
 		}
+		lbp.release();
+		roi.release();
 		for (int z = 0; z<256 && pixelCount != 0; z++) {
 			cout << hcount[z] << ",\n";
-			histogram[i + 498][z] = (float)hcount[z] / pixelCount;
+			histogram[i + cloudAmount][z] = (float)hcount[z] / pixelCount;
 			//file << histogram[i + 498][z] << ",\n";
 		}
 		//file << "\n";
 		cout << "Have " << pixelCount << "pixels." << endl;
 	}
 
-	for (int i = 0; i<749; i++) {
-		if (i<498)
+	for (int i = 0; i<cloudAmount+otherAmount; i++) {
+		if (i<cloudAmount)
 			tag[i] = 1;
 		else
 			tag[i] = -1;
