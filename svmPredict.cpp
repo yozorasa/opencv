@@ -50,7 +50,7 @@ int histogram(Mat lbp, Mat roi) {
 
 bool classification(Mat src) {
     Ptr<SVM> svm = SVM::create();
-    svm = SVM::load(record + "SVMresult.xml");
+    svm = SVM::load(record + "SVM.xml");
     int response = svm->predict(src);
     return response;
 }
@@ -58,7 +58,7 @@ bool classification(Mat src) {
 
 int main() {
     Mat lbp, roi;
-    for (int i = 1; i <= otherAmount; i++){
+    for (int i = 1; i <= otherAmount; i++) {
         lbp = imread(loadLocationNot + to_string(i) + "_lbp" + fileType, 0);
         roi = imread(loadLocationNot + to_string(i) + "_roi" + fileType);
         //imshow("lbp", lbp);
@@ -73,7 +73,7 @@ int main() {
         bool flag = classification(src);
         cout << "flag = " << flag << endl;
     }
-    //waitKey(0);
+    waitKey(0);
     //system("pause");
     return 0;
 }
