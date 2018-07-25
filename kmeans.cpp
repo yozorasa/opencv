@@ -6,15 +6,15 @@ using namespace std;
 #include <string>
 
 int imageStart = 1;
-int imageFinish = 452;
+int imageFinish = 1;
 int clusterNumber = 4;
 String loadLocation = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\cloud\\img 1-452 (taiwan)\\";
 String loadFileType = ".jpg";
-String saveLocation = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\cloud\\img 1-452 (taiwan)\\kmeansBinary\\";
+String saveLocation = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\test3\\";
 
-int bgrAbsThreshold = 15;
-int bgrAvgThreshold = 160;
-int rectSizeThreshold = 8000;
+int bgrAbsThreshold = 20;
+int bgrAvgThreshold = 140;
+int rectSizeThreshold = 5000;
 
 Scalar colorTab[] =     //10個顏色  
 {
@@ -142,6 +142,8 @@ public:
 		//保存聚類後的圖片  
 		Mat clusteredMat(rows, cols, CV_8UC3);
 		clusteredMat.setTo(Scalar::all(0));
+		Mat clusteredMat_magenta(rows, cols, CV_8UC3);
+		clusteredMat_magenta.setTo(Scalar::all(0));
 
 		Mat pixels(rows*cols, 1, CV_32FC3); //pixels用於保存所有的灰度像素  
 		pixels.setTo(Scalar::all(0));
@@ -197,6 +199,7 @@ public:
 		}
 
 		clusteredMat = image.clone();
+		clusteredMat_magenta = image.clone();
 		Scalar paintOn;
 		for (int i = 0; i < rows; ++i)
 		{
@@ -210,13 +213,12 @@ public:
 				{
 					paintOn = Scalar(0, 0, 0);
 					circle(clusteredMat, Point(j / channels, i), 1, paintOn);
+					circle(clusteredMat_magenta, Point(j / channels, i), 1, Scalar(255, 0, 255));
 				}
 				//circle(clusteredMat, Point(j / channels, i), 1, paintOn);
 				//circle(clusteredMat, Point(j / channels, i), 1, clusterColor[labels.at<int>(i*cols + (j / channels))]);        //標記像素點的類別，顏色區分
 			}
 		}
-		//imwrite(saveLocation + fileName +"kmsB" + loadFileType, clusteredMat);
-
 		Mat rectClusteredMat = clusteredMat.clone();
 		//imwrite(saveLocation + fileName +"kms" + loadFileType, clusteredMat);
 		Mat clusterMatGray;
@@ -230,42 +232,37 @@ public:
 		vector<Vec4i> hierarchy;
 		RNG rng(12345);
 		findContours(clusterMatGray, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_NONE);
-
-		Mat judgeBinary(image.size(), CV_8UC3, Scalar(0, 0, 0));
-
 		for (int i = 0; i<contours.size(); i++) {
 			Scalar color = Scalar(rng.uniform(0, 255), rng.uniform(0, 255), 255);
 			drawContours(contoursImg, contours, i, color, 2, 8, hierarchy);
+
 			Rect contoursRect = boundingRect(contours[i]);
 			if (contoursRect.width*contoursRect.height > rectSizeThreshold)
 			{
-				drawContours(judgeBinary, contours, i, Scalar(255, 255, 255), CV_FILLED, 8, hierarchy);
-				/*cv::rectangle(rectClusteredMat, contoursRect, cv::Scalar(0, 0, 255), 2);
+				cv::rectangle(rectClusteredMat, contoursRect, cv::Scalar(0, 0, 255), 2);
 				cv::rectangle(rectImg, contoursRect, cv::Scalar(0, 0, 255), 2);
 				Mat rectROI(contoursRect.size(), CV_8UC3, Scalar(0, 0, 0));
 				for (int y = 0; y < contoursRect.height; ++y)
 				{
 					const uchar *idata = clusteredMat.ptr<uchar>(y + contoursRect.y);
+					const uchar *mdata = clusteredMat_magenta.ptr<uchar>(y + contoursRect.y);
 					uchar *pdata = rectROI.ptr<uchar>(y);
-					uchar *qdata = judgeBinary.ptr<uchar>(y + contoursRect.y);
+
 					for (int x = 0; x < contoursRect.width; ++x)
 					{
 						int xx = contoursRect.x;
-						pdata[3 * x] = idata[3 * (x + xx)];
-						pdata[3 * x + 1] = idata[3 * (x + xx) + 1];
-						pdata[3 * x + 2] = idata[3 * (x + xx) + 2];
-
-						qdata[3 * (x + xx)] = idata[3 * (x + xx)];
-						qdata[3 * (x + xx) + 1] = idata[3 * (x + xx) + 1];
-						qdata[3 * (x + xx) + 2] = idata[3 * (x + xx) + 2];
+						//pdata[3 * x] = idata[3 * (x + xx)];
+						//pdata[3 * x + 1] = idata[3 * (x + xx) + 1];
+						//pdata[3 * x + 2] = idata[3 * (x + xx) + 2];
+						pdata[3 * x] = mdata[3 * (x + xx)];
+						pdata[3 * x + 1] = mdata[3 * (x + xx) + 1];
+						pdata[3 * x + 2] = mdata[3 * (x + xx) + 2];
 					}
 				}
 				//namedWindow("RectImage" + i);
 				String imName = "cs" + to_string(i);
 				//imshow(imName, rectROI);
-				//imwrite(saveLocation + "cut\\" + fileName + imName + ".jpg", rectROI);
-				//imwrite(saveLocation + fileName + imName + ".jpg", rectROI);
-				//imwrite(saveLocation + fileName + "jBin" + imName  + ".jpg", judgeBinary);*/
+				imwrite(saveLocation + "cut\\" + fileName + imName + ".jpg", rectROI);
 			}
 
 		}
@@ -273,7 +270,7 @@ public:
 		//imshow("rectImgColor", rectImg);
 		//imwrite(saveLocation + fileName + "Contours" + ".jpg", contoursImg);
 		//imwrite(saveLocation + fileName + "Rect" + ".jpg", rectImg);
-		imwrite(saveLocation + fileName + "jB" + ".jpg", judgeBinary);
+
 		return rectClusteredMat;
 	}
 };
