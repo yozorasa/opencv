@@ -3,12 +3,12 @@ using namespace cv;
 using namespace std;
 #include <string>
 
-String loadLocation = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\test2\\cutOrder\\";
+String loadLocation = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\test3\\cutOrder\\";
 String loadFileType = ".jpg";
-String saveLocation = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\test2\\cutOrder\\lbp\\";
+String saveLocation = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\test3\\lbp\\";
 String nameBeforeNumber = "cut";
 int startNum = 1;
-int finishNum = 2983;
+int finishNum = 3025;
 
 Mat LBP(String fileName)
 {

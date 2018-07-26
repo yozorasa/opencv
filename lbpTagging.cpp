@@ -4,16 +4,18 @@
 using namespace cv;
 using namespace std;
 
-String loadLocation = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\test2\\cutOrder\\";
-String loadLocation2 = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\test2\\cutOrder\\lbp\\";
+String loadLocation = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\test3\\cutOrder\\";
+String loadLocation2 = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\test3\\lbp\\";
 String fileType = ".jpg";
-String saveLocation = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\test2\\cutOrder\\cutTag\\";
-String saveLocation2 = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\test2\\cutOrder\\lbpTag\\";
+String saveLocation = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\lbpRename\\cloud\\";
+String saveLocation2 = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\lbpRename\\other\\";
 String loadFirstName = "cut";
 String loadLastName = "lbp";
-String saveName = "k_";
+//String saveName = "k_";
 int imageStart = 1;
-int imageFinish = 500;
+int imageFinish = 3025;
+int saveCloudNumberFrom = 498-1;
+int saveOtherNumberFrom = 252-1;
 
 int main()
 {
@@ -37,13 +39,13 @@ int main()
 		}
 		if (key == cloudKey) {
 			cout << ">>>>>>>>>>>>>>>>> cloud" << endl;
-			imwrite(saveLocation + loadFirstName + "_" + to_string(z) + "_1" + fileType, image);
-			imwrite(saveLocation2 + saveName + "_" + to_string(z) + "_1" + fileType, lbp);
+			imwrite(saveLocation + to_string(z+saveCloudNumberFrom) + "_roi" + fileType, image);
+			imwrite(saveLocation + to_string(z+saveCloudNumberFrom) + "_lbp" + fileType, lbp);
 		}
 		else {
 			cout << ">>>>>>>>>>>>>>>>> something" << endl;
-			imwrite(saveLocation + loadFirstName + "_" + to_string(z) + "_0" + fileType, image);
-			imwrite(saveLocation2 + saveName + "_" + to_string(z) + "_0" + fileType, lbp);
+			imwrite(saveLocation2 + to_string(z+saveOtherNumberFrom) + "_roi" + fileType, image);
+			imwrite(saveLocation2 + to_string(z+saveOtherNumberFrom) + "_lbp" + fileType, lbp);
 		}
 	}
 	return 0;
