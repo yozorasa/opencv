@@ -6,12 +6,13 @@ using namespace std;
 
 String loadLocation = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\cloud\\img 1075-1511 (russiaMoskva)\\kmeansBinary\\convexHull\\";
 String fileType = ".jpg";
-String saveLocation = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\cloud\\img 1075-1511 (russiaMoskva)\\kmeansBinary\\convexHull\\size128\\";
+String saveLocation = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\cloud\\img 1075-1511 (russiaMoskva)\\kmeansBinary\\convexHull\\size148x128\\";
 String loadName = "cH";
 String saveName = "p";
 int imageStart = 1075;
 int imageFinish = 1511;
-int ROISize = 128;
+int rowROISize = 128;
+int colROISize = 148;
 
 int main()
 {
@@ -29,22 +30,22 @@ int main()
 		}
 		x = 0;
 		y = 0;
-		col = img.cols / ROISize;
-		col = (img.cols % ROISize) > (ROISize / 2) ? (col + 1) : col;
-		row = img.rows / ROISize;
-		row = (img.rows % ROISize) > (ROISize / 2) ? (row + 1) : row;
+		col = img.cols / colROISize;
+		col = (img.cols % colROISize) > (colROISize / 2) ? (col + 1) : col;
+		row = img.rows / rowROISize;
+		row = (img.rows % rowROISize) > (rowROISize / 2) ? (row + 1) : row;
 		int piece = 1;
 		for (int i = 0; i < row; i++)
 		{
-			y = i * ROISize;
+			y = i * rowROISize;
 			if (i == row - 1)
-				y = img.rows - ROISize;
+				y = img.rows - rowROISize;
 			for (int j = 0; j < col; j++)
 			{
-				x = j * ROISize;
+				x = j * colROISize;
 				if (j == col - 1)
-					x = img.cols - ROISize;
-				subImg = img(Rect(x, y, ROISize, ROISize));
+					x = img.cols - colROISize;
+				subImg = img(Rect(x, y, colROISize, rowROISize));
 				imwrite(saveLocation+to_string(z)+saveName+to_string(piece)+fileType, subImg);
 				piece++;
 
