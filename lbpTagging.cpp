@@ -14,14 +14,14 @@ String loadLastName = "lbp";
 //String saveName = "k_";
 int imageStart = 1;
 int imageFinish = 3025;
-int saveCloudNumberFrom = 498-1;
-int saveOtherNumberFrom = 252-1;
+int saveCloudNumberFrom = 498;
+int saveOtherNumberFrom = 252;
 
 int main()
 {
-	
-	int cloudKey = 122;
-	int somethingKey = 120;
+
+	int cloudKey = 120;
+	int somethingKey = 122;
 	int key = 0;
 	for (int z = imageStart; z <= imageFinish; z++) {
 		cout << "image " + to_string(z);
@@ -39,13 +39,13 @@ int main()
 		}
 		if (key == cloudKey) {
 			cout << ">>>>>>>>>>>>>>>>> cloud" << endl;
-			imwrite(saveLocation + to_string(z+saveCloudNumberFrom) + "_roi" + fileType, image);
-			imwrite(saveLocation + to_string(z+saveCloudNumberFrom) + "_lbp" + fileType, lbp);
+			imwrite(saveLocation + to_string(saveCloudNumberFrom) + "_roi" + fileType, image);
+			imwrite(saveLocation + to_string(saveCloudNumberFrom++) + "_lbp" + fileType, lbp);
 		}
 		else {
 			cout << ">>>>>>>>>>>>>>>>> something" << endl;
-			imwrite(saveLocation2 + to_string(z+saveOtherNumberFrom) + "_roi" + fileType, image);
-			imwrite(saveLocation2 + to_string(z+saveOtherNumberFrom) + "_lbp" + fileType, lbp);
+			imwrite(saveLocation2 + to_string(saveOtherNumberFrom) + "_roi" + fileType, image);
+			imwrite(saveLocation2 + to_string(saveOtherNumberFrom++) + "_lbp" + fileType, lbp);
 		}
 	}
 	return 0;
