@@ -4,17 +4,17 @@
 using namespace cv;
 using namespace std;
 
-String loadLocation = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\waitForTag\\";
+String loadLocation = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\waitForTag2\\";
 String fileType = ".jpg";
 String saveLocation = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\tagOn2\\";
 //String loadName = "";
 //String saveName = "";
 int imageStart = 1;
-int imageFinish = 200000;
+int imageFinish = 146628;
 int need = 10000;
-float blackThreshold = 0.85;
-float whiteThreshold = 0.9;
-float turnThreshold = 0.1;
+float blackThreshold = 0.95;
+float whiteThreshold = 0.95;
+float turnThreshold = 0.0005;
 
 int bwJudge(Mat image) {
 	if (!image.data)
@@ -27,25 +27,25 @@ int bwJudge(Mat image) {
 	for (int i = 0; i < row; i++) {
 		for (int j = 0; j<col; j++) {
 			if (image.channels() == 3) {
-				if ((int)(image.at<Vec3b>(i, j)[0]) == 255 && (int)(image.at<Vec3b>(i, j)[1]) == 255 && (int)(image.at<Vec3b>(i, j)[2]) == 255) {
+				if ((int)(image.at<Vec3b>(i, j)[0]) == 0 && (int)(image.at<Vec3b>(i, j)[1]) == 0 && (int)(image.at<Vec3b>(i, j)[2]) == 0) {
 					cnt++;
-					if (j<col / 3)
+					if (j < col * 2 / 4)
 						left++;
-					else if (j >= col * 2 / 3)
-						right++;
-					else
+					if (j >= col * 1 / 4 && j < col * 3 / 4)
 						center++;
+					if (j >= col * 2 / 4)
+						right++;
 				}
 			}
 			else if (image.channels() == 1) {
-				if ((int)(image.at<uchar>(i, j)) == 255) {
+				if ((int)(image.at<uchar>(i, j)) == 0) {
 					cnt++;
-					if (j<col / 3)
+					if (j < col * 2 / 4)
 						left++;
-					else if (j >= col * 2 / 3)
-						right++;
-					else
+					if (j >= col * 2 / 4 && j < col * 3 / 4)
 						center++;
+					if (j >= col * 3 / 4)
+						right++;
 				}
 			}
 		}
@@ -58,11 +58,11 @@ int bwJudge(Mat image) {
 
 	cout << "  cnt = " << cloudPercentage << "  left = " << leftPercentage << "  center = " << centerPercentage << "  right = " << rightPercentage;
 
-	if (cnt >= blackThreshold * size) {
+	if (cnt > blackThreshold * size) {
 		cout << " --> Black" << endl;
 		return -1;
 	}
-	else if ((size - cnt) >= whiteThreshold * size) {
+	else if ((size - cnt) > whiteThreshold * size) {
 		cout << " --> White" << endl;
 		return -2;
 	}
@@ -85,14 +85,14 @@ int bwJudge(Mat image) {
 
 int main()
 {
-	for (int z = imageStart, int use = 1; z <= imageFinish && use <= need; z++) {
-		cout << "image " + to_string(z);
+	for (int z = imageStart, use = 1; z <= imageFinish && use <= need; z++) {
+		cout << "image " + to_string(z) + "SAVE: " + to_string(use);
 		Mat image = imread(loadLocation + to_string(z) + fileType);
 
 		int flag = bwJudge(image);
 		cout << "flag = " << flag << endl;
 		if (flag >= 0)
-			imwrite(saveLocation + +"k_" + to_string(use++) + "_" + to_string(flag) + fileType, image);
+			imwrite(saveLocation + to_string(use++) + "_" + to_string(flag) + fileType, image);
 		//imshow("img", image);
 		waitKey(0);
 	}
