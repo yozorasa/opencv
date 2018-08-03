@@ -96,6 +96,7 @@ int main() {
     Mat lbp, roi;
     for (int i = 1; i <= otherAmount; i++) {
         lbp = imread(loadLocationNot + to_string(i) + "_lbp" + fileType, 0);
+        /*HISTOGRAM
         roi = imread(loadLocationNot + to_string(i) + "_roi" + fileType);
         //imshow("lbp", lbp);
         //imshow("roi", roi);
@@ -106,6 +107,9 @@ int main() {
             //cout << testData[i] << endl;
         }
         Mat src(1, 256, CV_32FC1, testData);
+        */
+        Mat hogTrain_data;
+        convert_to_ml( hogTrain_data );
         bool flag = classification(src);
         cout << "flag = " << flag << endl;
     }
