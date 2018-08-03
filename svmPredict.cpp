@@ -12,6 +12,7 @@ String record = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\lbpRenam
 String loadLocation = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\lbpRename\\cloud\\";
 String loadLocationNot = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\lbpRename\\other\\";
 String fileType = ".jpg";
+String svmFileName = "SVM_hog.xml";
 int cloudAmount = 498;
 int otherAmount = 251;
 float histTemp[256] = { 0 };
@@ -48,9 +49,44 @@ int histogram(Mat lbp, Mat roi) {
     return 0;
 }
 
+HOGDescriptor *hog = new HOGDescriptor(Size(64,64), Size(16,16), Size(8,8), Size(8,8), 9, 1 );
+vector< Mat >  hogDatas;
+
+void convert_to_ml( Mat& trainData )
+{
+    //--Convert data
+    const int rows = (int)hogDatas.size();
+    const int cols = (int)std::max( hogDatas[0].cols, hogDatas[0].rows );
+    Mat tmp( 1, cols, CV_32FC1 ); //< used for transposition if needed
+    trainData = Mat( rows, cols, CV_32FC1 );
+
+    for( size_t i = 0 ; i < hogDatas.size(); ++i )
+    {
+        CV_Assert( hogDatas[i].cols == 1 || hogDatas[i].rows == 1 );
+
+        if( hogDatas[i].cols == 1 )
+        {
+            transpose( hogDatas[i], tmp );
+            tmp.copyTo( trainData.row( (int)i ) );
+        }
+        else if( hogDatas[i].rows == 1 )
+        {
+            hogDatas[i].copyTo( trainData.row( (int)i ) );
+        }
+    }
+}
+
+void hogCompute(Mat lbp){
+    vector<float>  hogDescriptors;
+    resize(lbp, lbp, Size(64,64), 0, 0, CV_INTER_AREA);
+    hog->compute(lbp, hogDescriptors,Size(1,1), Size(0,0)); 
+    hogDatas.push_back( Mat( hogDescriptors ).clone() );
+}
+
+
 bool classification(Mat src) {
     Ptr<SVM> svm = SVM::create();
-    svm = SVM::load(record + "SVM.xml");
+    svm = SVM::load(record + svmFileName);
     int response = svm->predict(src);
     return response;
 }
