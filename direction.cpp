@@ -4,13 +4,15 @@
 using namespace cv;
 using namespace std;
 
-String loadLocation = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\waitForTag2\\";
+String loadLocation = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\cloud\\img 1075-1511 (russiaMoskva)\\kmeansBinary\\convexHull\\size256x128\\";
+String loadLocation2 = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\cloud\\img 1075-1511 (russiaMoskva)\\kmeansBinary\\convexHull\\size256x128(origin)\\";
 String fileType = ".jpg";
-String saveLocation = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\tagOn2\\";
+String saveLocation = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\size256x128\\convexHull\\";
+String saveLocation2 = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\size256x128\\origin\\";
 //String loadName = "";
 //String saveName = "";
 int imageStart = 1;
-int imageFinish = 146628;
+int imageFinish = 60000;
 int need = 10000;
 float blackThreshold = 0.95;
 float whiteThreshold = 0.95;
@@ -60,11 +62,11 @@ int bwJudge(Mat image) {
 
 	if (cnt > blackThreshold * size) {
 		cout << " --> Black" << endl;
-		return -1;
+		return 0;//-1;
 	}
 	else if ((size - cnt) > whiteThreshold * size) {
 		cout << " --> White" << endl;
-		return -2;
+		return 0;//-2;
 	}
 	else {
 		cout << " --> Judge Please" << endl;
@@ -85,6 +87,7 @@ int bwJudge(Mat image) {
 
 int main()
 {
+	/*ONLY SAVE USEFUL IMAGE
 	for (int z = imageStart, use = 1; z <= imageFinish && use <= need; z++) {
 		cout << "image " + to_string(z) + "SAVE: " + to_string(use);
 		Mat image = imread(loadLocation + to_string(z) + fileType);
@@ -96,5 +99,18 @@ int main()
 		//imshow("img", image);
 		waitKey(0);
 	}
+	*/
+	for (int z = imageStart; z <= imageFinish; z++) {
+		cout << "image " + to_string(z);
+		Mat image = imread(loadLocation + to_string(z) + fileType);
+		Mat image2 = imread(loadLocation2 + to_string(z) + fileType);
+
+		int flag = bwJudge(image);
+		cout << "flag = " << flag << endl;
+		imwrite(saveLocation + to_string(z) + "_" + to_string(flag) + fileType, image);
+		imwrite(saveLocation2+ to_string(z) + "_" + to_string(flag) + fileType, image2);
+		waitKey(0);
+	}
+
 	return 0;
 }
