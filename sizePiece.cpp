@@ -6,20 +6,20 @@ using namespace std;
 
 String loadLocation = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\cloud\\img 1075-1511 (russiaMoskva)\\kmeansBinary\\convexHull\\";
 String fileType = ".jpg";
-String saveLocation = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\cloud\\img 1075-1511 (russiaMoskva)\\kmeansBinary\\convexHull\\size148x128\\";
+String saveLocation = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\cloud\\img 1075-1511 (russiaMoskva)\\kmeansBinary\\convexHull\\size256x128\\";
 String loadName = "cH";
 String saveName = "p";
 int imageStart = 1075;
 int imageFinish = 1511;
 int rowROISize = 128;
-int colROISize = 148;
+int colROISize = 256;
 
 int main()
 {
 	Mat img, subImg;
 	int x, y, col, row, key;
-
-	for(int z=imageStart;z<=imageFinish;z++)
+	int count = 1;
+	for (int z = imageStart; z <= imageFinish; z++)
 	{
 		cout << z;
 		img = cv::imread(loadLocation + to_string(z) + loadName + fileType);
@@ -46,7 +46,11 @@ int main()
 				if (j == col - 1)
 					x = img.cols - colROISize;
 				subImg = img(Rect(x, y, colROISize, rowROISize));
-				imwrite(saveLocation+to_string(z)+saveName+to_string(piece)+fileType, subImg);
+				//imwrite(saveLocation+to_string(z)+saveName+to_string(piece)+fileType, subImg);
+				//cout << saveLocation + to_string(count) + fileType << endl;
+				imwrite(saveLocation + to_string(count++) + fileType, subImg);
+				if (count > 60000)
+					return 0;
 				piece++;
 
 			}
