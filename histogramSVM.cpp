@@ -20,12 +20,18 @@ String loadLocationO = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\l
 String fileType = ".jpg";
 String svmFileName = "test.xml";
 
+int cloudAmount = 498;
+int otherAmount = 251;
+float histTemp[256] = { 0 };
+float histogramCal[498 + 251][256] = { 0 };
+int tag[498 + 251] = { 0 };
+/*
 int cloudAmount = 5770 / 2;
 int otherAmount = 1780 / 2;
 float histTemp[256] = { 0 };
 float histogramCal[5770 / 2 + 1780 / 2][256] = { 0 };
 int tag[5770 / 2 + 1780 / 2] = { 0 };
-
+*/
 int histogram(Mat lbp, Mat roi) {
 	int hcount[256] = { 0 };
 	int rows = lbp.rows;
@@ -143,13 +149,14 @@ int main()
 
 	SVM::ParamTypes params;
 	SVM::Types svm_type = SVM::C_SVC;
-	SVM::KernelTypes kernel_type = SVM::LINEAR;
+	SVM::KernelTypes kernel_type = SVM::RBF;
 	Ptr<SVM> svm = SVM::create();
 	svm->setKernel(kernel_type);
 	svm->setType(svm_type);
 	svm->trainAuto(trainingData);
 	svm->save(record + svmFileName);
 
+	int correct = 0;
 	for (int i = 1; i <= cloudAmount; i++) {
 		lbp = imread(loadLocationC + to_string(i) + "_lbp" + fileType, 0);
 		roi = imread(loadLocationC + to_string(i) + "_roi" + fileType);
@@ -161,6 +168,8 @@ int main()
 		}
 		Mat src(1, 256, CV_32FC1, testData);
 		int response = svm->predict(src);
+		if (response == 1)
+			correct++;
 		cout << "Cloud <<< flag = " << response << endl;
 	}
 	for (int i = 1; i <= otherAmount; i++) {
@@ -174,9 +183,11 @@ int main()
 		}
 		Mat src(1, 256, CV_32FC1, testData);
 		int response = svm->predict(src);
+		if (response == -1)
+			correct++;
 		cout << "Other <<< flag = " << response << endl;
 	}
-
+	cout << "All = " << cloudAmount + otherAmount << " correct = " << correct << " Accuracy = " << (float)correct / (cloudAmount + otherAmount) << endl;
 	system("pause");
 	return 0;
 }

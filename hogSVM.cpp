@@ -26,8 +26,13 @@ int otherAmount = 251;
 float histTemp[256] = { 0 };
 float histogramCal[498 + 251][256] = { 0 };
 int tag[498 + 251] = { 0 };
-
-
+/*
+int cloudAmount = 5770 / 2;
+int otherAmount = 1780 / 2;
+float histTemp[256] = { 0 };
+float histogramCal[5770 / 2 + 1780 / 2][256] = { 0 };
+int tag[5770 / 2 + 1780 / 2] = { 0 };
+*/
 HOGDescriptor *hog = new HOGDescriptor(Size(64, 64), Size(8, 8), Size(4, 4), Size(4, 4), 9, 1);
 
 vector< Mat >  hogDatas;
@@ -166,24 +171,28 @@ int main()
 	svm->trainAuto(trainingData);
 	svm->save(record + "test.xml");
 
-	for (int i = 1; i <= cloudAmount; i++) {
+	int correct = 0;
+	for (int i = 499; i <= 700; i++) {
 		lbp = imread(loadLocationC + to_string(i) + "_lbp" + fileType, 0);
 		vector<float> src = hogCompute(lbp);
 		Mat hogTrain_data;
 		convert_to_ml2(hogTrain_data, Mat(src));
 		int response = svm->predict(hogTrain_data);
+		if (response == 1)
+			correct++;
 		cout << "Cloud <<< flag = " << response << endl;
 	}
-	for (int i = 1; i <= otherAmount; i++) {
+	for (int i = 252; i <= 400; i++) {
 		lbp = imread(loadLocationO + to_string(i) + "_lbp" + fileType, 0);
 		vector<float> src = hogCompute(lbp);
 		Mat hogTrain_data;
 		convert_to_ml2(hogTrain_data, Mat(src));
 		int response = svm->predict(hogTrain_data);
+		if (response == -1)
+			correct++;
 		cout << "Other <<< flag = " << response << endl;
 	}
-	waitKey(0);
-
+	cout << "All = " << cloudAmount + otherAmount << " correct = " << correct << " Accuracy = " << (float)correct / (cloudAmount + otherAmount) << endl;
 	system("pause");
 	return 0;
 }
