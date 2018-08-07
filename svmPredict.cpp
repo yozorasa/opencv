@@ -104,6 +104,7 @@ bool classification(Mat src) {
 
 int main() {
     Mat lbp, roi;
+    int correct=0;
     for (int i = 1; i <= otherAmount; i++) {
         /*/Histogram
         lbp = imread(loadLocationNot + to_string(i) + "_lbp" + fileType, 0);
@@ -125,10 +126,11 @@ int main() {
         Mat hogTrain_data;
         convert_to_ml(hogTrain_data, Mat(src));
         bool flag = classification(hogTrain_data);
-
+        if(flag==-1)
+            correct++;
         cout << "flag = " << flag << endl;
     }
-    waitKey(0);
-    //system("pause");
+    cout << "All = " << otherAmount << " correct = " << correct << " Accuracy = " << (float)correct / otherAmount << endl;
+    system("pause");
     return 0;
 }
