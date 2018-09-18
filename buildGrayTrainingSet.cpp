@@ -251,7 +251,7 @@ Mat cutROI(const Mat& cImg, const Mat& image, const Mat& clusteredMat, String fi
 			}
 
 			if (key == cloudKey) {
-				cout << ">> cloud" << endl;
+				//cout << ">> cloud" << endl;
 				//write the position infomation in file
 
 				//BBox Label Tool
