@@ -6,7 +6,7 @@ using namespace std;
 #include <stdlib.h>
 #include <string>
 
-int imageStart = 89;
+int imageStart = 134;
 int imageFinish = 452;
 int clusterNumber = 4;
 String loadLocation = "C:\\Users\\yozorasa\\Documents\\GraduateSchool\\space\\cloud\\img 1-452 (taiwan)\\";
@@ -22,8 +22,8 @@ int cloudKey = 120;		//key 'x'
 int somethingKey = 122;	//key 'z' 
 int key = 0;
 
-//int cloudCount = 582;
-//int otherCount = 1556;
+int cloudCount = 582;
+int otherCount = 1556;
 
 float widthUnit;
 float heightUnit;
@@ -189,7 +189,6 @@ Mat cutROI(const Mat& cImg, const Mat& image, const Mat& clusteredMat, String fi
 	dilate(clusterMatGray, clusterMatGray, Mat());
 	erode(clusterMatGray, clusterMatGray, Mat());
 	erode(clusterMatGray, clusterMatGray, Mat());
-	imshow("clusterMatGray", clusterMatGray);
 	Mat contoursImg = image.clone();
 	Mat allROI(image.size(), CV_8UC3, Scalar(0, 0, 0));
 	vector<vector<Point>> contours;
@@ -201,6 +200,7 @@ Mat cutROI(const Mat& cImg, const Mat& image, const Mat& clusteredMat, String fi
 	for (int i = 0; i<contours.size(); i++) {
 		Scalar color = Scalar(rng.uniform(0, 255), rng.uniform(0, 255), 255);
 		drawContours(contoursImg, contours, i, color, 2, 8, hierarchy);
+		imshow("contoursImg", contoursImg);
 		drawContours(cmContour, contours, i, color, 2, 8, hierarchy);
 		Rect contoursRect = boundingRect(contours[i]);
 		//cout << "Contours " << i << " = " << contours[i] << endl;
@@ -236,7 +236,9 @@ Mat cutROI(const Mat& cImg, const Mat& image, const Mat& clusteredMat, String fi
 				}
 			}
 			//namedWindow("RectImage" + i);
-			imshow("cloud or not", crectROI);
+			Mat temp;
+			resize(crectROI, temp, Size(crectROI.cols * 3, crectROI.rows * 3), 0, 0, INTER_LINEAR);
+			imshow("cloud or not", temp);
 			//wait key
 
 			cout << "Enter: ";
@@ -267,7 +269,7 @@ Mat cutROI(const Mat& cImg, const Mat& image, const Mat& clusteredMat, String fi
 
 				fout << "0 " << x << " " << y << " " << w << " " << h << endl;
 				cout << ">> Cloud\\" + fileName + "_" + to_string(i) + ".jpg" << endl;
-				
+
 				imwrite(saveLocation + "cutCloud\\" + fileName + "_" + to_string(i) + ".jpg", rectROI);
 				//imwrite(saveLocation + "cutCloud\\" + to_string(cloudCount) + ".jpg", rectROI);
 				//cloudCount++;
