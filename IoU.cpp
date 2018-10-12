@@ -117,7 +117,7 @@ int main()
 	cout << IoUAvg << endl;
 	IoUlogR.close();
 	IoUlogW << ",,," << endl;
-	IoUlogW << "Image Have Cloud:," << count << ",IoU AVG," << IoUAvg << endl;
+	IoUlogW << "Image Have Cloud:," << count << ",IoU AVG:," << IoUAvg << endl;
 	IoUlogW.close();
 	return 0;
 }
