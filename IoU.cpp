@@ -70,21 +70,19 @@ void IoU(const Mat& groundTruthImg, const Mat& image, String fileName)
 
 	imwrite(saveImg + fileName + ".jpg", iouImg);
 
-	//float iou[3] = { 0 };
 	iou[0] = iintersection;
 	iou[1] = uunion;
 	if (uunion == 0)
 		iou[2] = 0;
 	else
 		iou[2] = (float)iintersection / (float)uunion;
-	//return iou;
 }
 
 int main()
 {
-	ofstream IoUlog;
-	IoUlog.open(saveImg + "log.csv");
-	IoUlog << "image,intersection,union,IoU" << endl;
+	ofstream IoUlogW;
+	IoUlogW.open(saveImg + "log.csv");
+	IoUlogW << "image,intersection,union,IoU" << endl;
 	for (int i = imageStart; i <= imageFinish; i++) {
 		String loadFileName = to_string(i);
 		//cout << "Read Image >> " << loadFileName << endl;
@@ -93,7 +91,33 @@ int main()
 		//float* iou = IoU(gt, image, loadFileName);
 		IoU(gt, image, loadFileName);
 		cout << loadFileName + loadFileType << "," << iou[0] << "," << iou[1] << "," << iou[2] << endl;
-		IoUlog << loadFileName+loadFileType << "," << iou[0] << "," << iou[1] << "," << iou[2] << endl;
+		IoUlogW << loadFileName+loadFileType << "," << iou[0] << "," << iou[1] << "," << iou[2] << endl;
 	}
+	ifstream IoUlogR;
+	IoUlogR.open(saveImg + "log.csv");
+	float IoUAvg = 0;
+	char line[128];
+	int count = 0;
+	while (IoUlogR.getline(line, sizeof(line), '\n'))
+	{
+		cout << line << endl;
+		String temp;
+		temp = strtok(line, ",");
+		temp = strtok(NULL, ",");
+		temp = strtok(NULL, ",");
+		if (temp != "0") {
+			count++;
+			temp = strtok(NULL, ",");
+			const char *tempChar = temp.c_str();
+			IoUAvg += atof(tempChar);
+			//cout << temp << endl;
+		}
+	}
+	IoUAvg /= count;
+	cout << IoUAvg << endl;
+	IoUlogR.close();
+	IoUlogW << ",,," << endl;
+	IoUlogW << "Image Have Cloud:," << count << ",IoU AVG," << IoUAvg << endl;
+	IoUlogW.close();
 	return 0;
 }
