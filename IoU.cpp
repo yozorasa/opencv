@@ -146,8 +146,8 @@ int main()
 		//imshow("A", gt);
 		//imshow("B", image);
 		//waitKey();
-		//imwrite(saveImg + "a.jpg", gt);
-		//imwrite(saveImg + "b.jpg", image);
+		imwrite(saveImg + loadFileName + "gt.jpg", gt);
+		imwrite(saveImg + loadFileName + "yl.jpg", image);
 		IoU_CM(gt, image, loadFileName);
 		cout << loadFileName + loadFileType << "," << iou[0] << "," << iou[1] << "," << iou[2] << ",," << cm[0][0] << "," << cm[0][1] << "," << cm[1][0] << "," << cm[1][1] << endl;
 		IoUlogW << loadFileName + loadFileType << "," << iou[0] << "," << iou[1] << "," << iou[2] << ",," << cm[0][0] << "," << cm[0][1] << "," << cm[1][0] << "," << cm[1][1] << endl;
@@ -179,7 +179,6 @@ int main()
 			//cout << temp << endl;
 		}
 
-		temp = strtok(NULL, ",");//space
 		cmCount += 1;
 		temp = strtok(NULL, ",");//TP
 		tempChar = temp.c_str();
