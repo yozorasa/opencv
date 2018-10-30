@@ -79,7 +79,6 @@ int main(int argc, char** argv)
         if (!ifile) throw("error");
         cap.open(str);
         //str.replace(str.end() - 4, str.end(), "_yolo_out_cpp.jpg");
-        str.replace(str.end() - 4, str.end(), "_predict.jpg");
         outputFile = str;
         /*}
         else if (parser.has("video"))
@@ -122,7 +121,7 @@ int main(int argc, char** argv)
         if (frame.empty()) {
             cout << "Done processing !!!" << endl;
             cout << "Output file is stored as " << outputFile << endl;
-            waitKey(3000);
+            //waitKey(3000);
             break;
         }
 
@@ -168,10 +167,10 @@ int main(int argc, char** argv)
         imwrite("rect.jpg", frame);
         imwrite("binary.jpg", binYOLO);
         //imshow(kWinName, frame);
-        imshow("rect", frame);
+        /*imshow("rect", frame);
         imshow("binAll", binAll);
         imshow("binYOLO", binYOLO);
-
+        */
     }
 
     cap.release();
