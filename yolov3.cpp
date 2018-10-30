@@ -45,14 +45,14 @@ int main(int argc, char** argv)
     return 0;
     }*/
     // Load names of classes
-    string classesFile = "C:/Users/yozorasa/Documents/GraduateSchool/space/run/lib/cloud/cloud.names";
+    string classesFile = "config/cloud.names";
     ifstream ifs(classesFile.c_str());
     string line;
     while (getline(ifs, line)) classes.push_back(line);
 
     // Give the configuration and weight files for the model
-    String modelConfiguration = "C:/Users/yozorasa/Documents/GraduateSchool/space/run/lib/cloud/yolov3-cloud.cfg";
-    String modelWeights = "C:/Users/yozorasa/Documents/GraduateSchool/space/run/lib/cloud/yolov3-cloud_20000.weights";
+    String modelConfiguration = "config/yolov3-cloud.cfg";
+    String modelWeights = "config/yolov3-cloud_20000.weights";
 
     // Load the network
     Net net = readNetFromDarknet(modelConfiguration, modelWeights);
